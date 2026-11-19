@@ -158,6 +158,34 @@ class ListHabitsPresenterTest : BaseUnitTest() {
         assertEquals(expected, state)
     }
 
+    @Test
+    fun testBuildState_daysSince() {
+        addHabit("Alpha", PaletteColor(1), position = 0, completedOffsets = intArrayOf(9, 4))
+        addHabit("Beta", PaletteColor(1), position = 1, completedOffsets = intArrayOf(0))
+        addHabit("Gamma", PaletteColor(1), position = 2)
+
+        fun daysSinceByName(showDaysSince: Boolean): Map<String, Int?> {
+            return ListHabitsPresenter.buildState(
+                allHabits = habitList,
+                filter = null,
+                primaryOrder = Order.BY_POSITION,
+                secondaryOrder = Order.BY_NAME_ASC,
+                checkmarkCount = checkmarkCount,
+                theme = theme,
+                showDaysSince = showDaysSince
+            ).items.associate { it.name to it.daysSinceLast }
+        }
+
+        assertEquals(
+            mapOf("Alpha" to 4, "Beta" to 0, "Gamma" to null),
+            daysSinceByName(showDaysSince = true)
+        )
+        assertEquals(
+            mapOf("Alpha" to null, "Beta" to null, "Gamma" to null),
+            daysSinceByName(showDaysSince = false)
+        )
+    }
+
     private fun addHabit(
         name: String,
         color: PaletteColor,

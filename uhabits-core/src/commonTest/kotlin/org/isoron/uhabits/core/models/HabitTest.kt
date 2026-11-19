@@ -18,6 +18,7 @@
  */
 package org.isoron.uhabits.core.models
 
+import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.BaseUnitTest
 import kotlin.test.BeforeTest
@@ -25,6 +26,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class HabitTest : BaseUnitTest() {
@@ -109,6 +111,69 @@ class HabitTest : BaseUnitTest() {
         h.originalEntries.add(Entry(getToday(), 50000))
         h.recompute()
         assertTrue(h.isCompletedToday())
+    }
+
+    @Test
+    fun test_daysSinceLastDone_neverDone() {
+        val today = LocalDate(2026, 11, 19)
+        val h = modelFactory.buildHabit()
+        assertNull(h.daysSinceLastDone(today))
+        h.originalEntries.add(Entry(today.minus(1), Entry.NO))
+        h.originalEntries.add(Entry(today.minus(2), Entry.SKIP))
+        h.recompute()
+        assertNull(h.daysSinceLastDone(today))
+    }
+
+    @Test
+    fun test_daysSinceLastDone_yesNo() {
+        val today = LocalDate(2026, 11, 19)
+        val h = modelFactory.buildHabit()
+        h.originalEntries.add(Entry(today.minus(12), Entry.YES_MANUAL))
+        h.originalEntries.add(Entry(today.minus(5), Entry.YES_MANUAL))
+        h.originalEntries.add(Entry(today.minus(2), Entry.NO))
+        h.originalEntries.add(Entry(today.minus(1), Entry.SKIP))
+        h.recompute()
+        assertEquals(5, h.daysSinceLastDone(today))
+
+        h.originalEntries.add(Entry(today, Entry.YES_MANUAL))
+        h.recompute()
+        assertEquals(0, h.daysSinceLastDone(today))
+        assertEquals(1, h.daysSinceLastDone(today.plus(1)))
+    }
+
+    @Test
+    fun test_daysSinceLastDone_ignoresLaterEntries() {
+        val today = LocalDate(2026, 11, 19)
+        val h = modelFactory.buildHabit()
+        h.originalEntries.add(Entry(today.minus(3), Entry.YES_MANUAL))
+        h.originalEntries.add(Entry(today.plus(2), Entry.YES_MANUAL))
+        h.recompute()
+        assertEquals(3, h.daysSinceLastDone(today))
+    }
+
+    @Test
+    fun test_daysSinceLastDone_ignoresAutomaticCheckmarks() {
+        val today = LocalDate(2026, 11, 19)
+        val h = modelFactory.buildHabit()
+        h.frequency = Frequency(1, 7)
+        h.originalEntries.add(Entry(today.minus(6), Entry.YES_MANUAL))
+        h.originalEntries.add(Entry(today.minus(1), Entry.YES_AUTO))
+        h.recompute()
+        assertEquals(6, h.daysSinceLastDone(today))
+    }
+
+    @Test
+    fun test_daysSinceLastDone_numerical() {
+        val today = LocalDate(2026, 11, 19)
+        val h = modelFactory.buildHabit()
+        h.type = HabitType.NUMERICAL
+        h.targetType = NumericalHabitType.AT_LEAST
+        h.targetValue = 2.0
+        h.originalEntries.add(Entry(today.minus(4), 1500))
+        h.originalEntries.add(Entry(today.minus(2), Entry.SKIP))
+        h.originalEntries.add(Entry(today.minus(1), 0))
+        h.recompute()
+        assertEquals(4, h.daysSinceLastDone(today))
     }
 
     @Test

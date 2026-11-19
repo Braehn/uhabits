@@ -42,7 +42,8 @@ object ListHabitsPresenter {
         primaryOrder: Order,
         secondaryOrder: Order,
         checkmarkCount: Int,
-        theme: Theme
+        theme: Theme,
+        showDaysSince: Boolean = false
     ): ListHabitsState {
         val view = allHabits.getFiltered(filter)
         view.primaryOrder = primaryOrder
@@ -67,7 +68,8 @@ object ListHabitsPresenter {
                     checkmarks = entries.map { it.value },
                     completed = entries.map { it.completed },
                     notes = entries.map { it.notes },
-                    category = habit.category
+                    category = habit.category,
+                    daysSinceLast = if (showDaysSince) habit.daysSinceLastDone(today) else null
                 )
             )
         }
@@ -94,5 +96,7 @@ data class HabitCardState(
     val checkmarks: List<Int>,
     val completed: List<Boolean>,
     val notes: List<String>,
-    val category: String
+    val category: String,
+    /** Days since the habit was last done, or null if never done or the setting is off. */
+    val daysSinceLast: Int? = null
 )

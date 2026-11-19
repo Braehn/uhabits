@@ -31,12 +31,19 @@ data class OverviewCardState(
     val scoreYearDiff: Float,
     val scoreToday: Float,
     val totalCount: Long,
-    val theme: Theme
+    val theme: Theme,
+    val showDaysSince: Boolean = false,
+    /** Days since the habit was last done, or null if it was never done. */
+    val daysSinceLast: Int? = null
 )
 
 class OverviewCardPresenter {
     companion object {
-        fun buildState(habit: Habit, theme: Theme): OverviewCardState {
+        fun buildState(
+            habit: Habit,
+            theme: Theme,
+            showDaysSince: Boolean = false
+        ): OverviewCardState {
             val today = getToday()
             val lastMonth = today.minus(30)
             val lastYear = today.minus(365)
@@ -54,7 +61,9 @@ class OverviewCardPresenter {
                 scoreMonthDiff = scoreToday - scoreLastMonth,
                 scoreYearDiff = scoreToday - scoreLastYear,
                 totalCount = totalCount,
-                theme = theme
+                theme = theme,
+                showDaysSince = showDaysSince,
+                daysSinceLast = if (showDaysSince) habit.daysSinceLastDone(today) else null
             )
         }
     }

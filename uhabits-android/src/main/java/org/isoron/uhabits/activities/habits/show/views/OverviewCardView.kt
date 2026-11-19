@@ -57,6 +57,14 @@ class OverviewCardView(context: Context, attrs: AttributeSet) : LinearLayout(con
         binding.totalCountLabel.text = state.totalCount.toString()
         binding.yearDiffLabel.setTextColor(if (state.scoreYearDiff >= 0) androidColor else inactiveColor)
         binding.yearDiffLabel.text = formatPercentageDiff(state.scoreYearDiff)
+
+        binding.daysSinceColumn.visibility = if (state.showDaysSince) VISIBLE else GONE
+        binding.daysSinceLabel.setTextColor(if (state.daysSinceLast != null) androidColor else inactiveColor)
+        binding.daysSinceLabel.text = when (val days = state.daysSinceLast) {
+            null -> context.getString(R.string.days_since_never)
+            0 -> context.getString(R.string.days_since_today)
+            else -> days.toString()
+        }
         postInvalidate()
     }
 }

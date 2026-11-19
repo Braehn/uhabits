@@ -102,7 +102,8 @@ class ShowHabitPresenter(
                 ),
                 overview = OverviewCardPresenter.buildState(
                     habit = habit,
-                    theme = theme
+                    theme = theme,
+                    showDaysSince = preferences.isDaysSinceEnabled
                 ),
                 notes = NotesCardPresenter.buildState(
                     habit = habit

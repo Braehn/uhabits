@@ -24,6 +24,7 @@
 
     <string name="app_name" >Loop Habit Tracker</string>
     <string name="main_activity_title">Habits</string>
+    <string name="launcher_title" translatable="false">Habits+</string>
     <string name="action_settings">Settings</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
@@ -234,6 +235,15 @@
     <string name="pref_skip_description">Toggle twice to add a skip instead of a checkmark. Skips keep your score unchanged and don\'t break your streak.</string>
     <string name="pref_unknown_title">Show question marks for missing data</string>
     <string name="pref_unknown_description">Differentiate days without data from actual lapses. To enter a lapse, toggle twice.</string>
+    <string name="pref_days_since_title">Show days since last done</string>
+    <string name="pref_days_since_description">Show how many days ago each habit was last checked, under its name and on its page.</string>
+    <string name="days_since">Days since</string>
+    <string name="days_since_today">Today</string>
+    <string name="days_since_never">Never</string>
+    <plurals name="days_since_ago">
+        <item quantity="one">%d day ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
     <string name="you_are_now_a_developer">You are now a developer</string>
     <string name="activity_not_found">No app was found to support this action</string>
     <string name="pref_midnight_delay_title">Extend day a few hours past midnight</string>
