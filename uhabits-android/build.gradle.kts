@@ -55,7 +55,8 @@ android {
         versionName = "2.3.2"
         minSdk = 28
         targetSdk = 36
-        applicationId = "org.isoron.uhabits"
+        // Fork: its own app ID, so it installs next to Loop from the Play Store.
+        applicationId = "org.isoron.uhabits.dayssince"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

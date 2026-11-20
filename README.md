@@ -8,6 +8,15 @@
   </a>
 </p>
 
+> **About this fork (Habits+).** It adds a "days since" count: under each
+> habit's name on the main screen ("Today", "12 days ago"), and as a "Days
+> since" number on the habit's page. It counts the days since the last
+> check-mark you tapped, so it works for "days since I called mom" and "days
+> since I last smoked" alike. Turn it off in Settings → "Show days since last
+> done". The fork installs next to Loop from the Play Store and uses the same
+> backup files: export a full backup from Loop and import it here. The newest
+> APK is on the [latest release](../../releases/tag/latest).
+
 Loop is a mobile app that helps you create and maintain good habits,
 allowing you to achieve your long-term goals. Detailed graphs and statistics
 show you how your habits improved over time. It is completely ad-free and open

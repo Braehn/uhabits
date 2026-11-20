@@ -73,6 +73,29 @@ data class Habit(
         return value != Entry.UNKNOWN
     }
 
+    /**
+     * Returns how many days have passed since the user last did this habit: 0 if it was done
+     * on [today], 1 if it was done the day before, and so on. Returns null if it was never done.
+     *
+     * Only entries the user made count. For yes/no habits, that is a manual check-mark, not one
+     * of the automatic check-marks added to habits that are not daily; for numerical habits, any
+     * value above zero. Skips, and entries after [today], are ignored.
+     */
+    fun daysSinceLastDone(today: LocalDate = getToday()): Int? {
+        val last = originalEntries.getKnown().firstOrNull { entry ->
+            !entry.date.isNewerThan(today) && isDone(entry)
+        } ?: return null
+        return last.date.daysUntil(today)
+    }
+
+    private fun isDone(entry: Entry): Boolean {
+        return if (isNumerical) {
+            entry.value > 0 && entry.value != Entry.SKIP
+        } else {
+            entry.value == Entry.YES_MANUAL
+        }
+    }
+
     fun recompute() {
         computedEntries.recomputeFrom(
             originalEntries = originalEntries,

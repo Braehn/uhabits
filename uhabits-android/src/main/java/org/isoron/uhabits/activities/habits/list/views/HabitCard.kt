@@ -27,6 +27,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -64,6 +65,7 @@ class HabitCardView(
     private var numberPanel: NumberPanelView
     private var innerFrame: LinearLayout
     private var label: TextView
+    private var daysSinceLabel: TextView
     private var scoreRing: RingView
 
     private var dataOffset = 0
@@ -75,9 +77,16 @@ class HabitCardView(
         state = newState
         val r = newState.record
         val c = getActiveColor(r)
+        val daysSince = r.daysSinceLast
         label.apply {
             text = r.name
             setTextColor(c)
+            // Keep the card's height when the days-since line is shown below the name.
+            maxLines = if (daysSince == null) 2 else 1
+        }
+        daysSinceLabel.apply {
+            visibility = if (daysSince == null) View.GONE else View.VISIBLE
+            if (daysSince != null) text = formatDaysSince(daysSince)
         }
         scoreRing.apply {
             setPercentage(r.score.toFloat())
@@ -112,6 +121,13 @@ class HabitCardView(
         numberPanel.setDataOffset(offset)
     }
 
+    private fun formatDaysSince(days: Int): String {
+        return when (days) {
+            0 -> resources.getString(R.string.days_since_today)
+            else -> resources.getQuantityString(R.plurals.days_since_ago, days, days)
+        }
+    }
+
     private fun getActiveColor(record: HabitCardState): Int {
         return when (record.archived) {
             true -> sres.getColor(R.attr.contrast60)
@@ -134,10 +150,27 @@ class HabitCardView(
         label = TextView(context).apply {
             maxLines = 2
             ellipsize = TextUtils.TruncateAt.END
-            layoutParams = LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f)
+            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
             if (SDK_INT >= Build.VERSION_CODES.Q) {
                 breakStrategy = BREAK_STRATEGY_BALANCED
             }
+        }
+
+        daysSinceLabel = TextView(context).apply {
+            maxLines = 1
+            ellipsize = TextUtils.TruncateAt.END
+            visibility = GONE
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            setTextColor(sres.getColor(R.attr.contrast60))
+            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+        }
+
+        val labelColumn = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_VERTICAL
+            layoutParams = LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f)
+            addView(label)
+            addView(daysSinceLabel)
         }
 
         checkmarkPanel = checkmarkPanelFactory.create().apply {
@@ -182,7 +215,7 @@ class HabitCardView(
             elevation = dp(1f)
 
             addView(scoreRing)
-            addView(label)
+            addView(labelColumn)
             addView(checkmarkPanel)
             addView(numberPanel)
 
