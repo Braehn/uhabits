@@ -69,6 +69,13 @@ android {
                 storePassword = System.getenv("LOOP_STORE_PASSWORD")
             }
         }
+        // Fork: when DEBUG_KEYSTORE names a key file (the APK workflow sets it), debug builds are
+        // signed with it, so each APK can update the one installed before it.
+        System.getenv("DEBUG_KEYSTORE")?.let { path ->
+            getByName("debug") {
+                storeFile = file(path)
+            }
+        }
     }
 
     buildTypes {
